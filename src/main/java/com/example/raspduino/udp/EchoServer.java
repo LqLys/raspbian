@@ -25,9 +25,10 @@ public class EchoServer extends Thread {
     private DatagramSocket socket;
     public boolean running;
     private byte[] buf = new byte[256];
+    int counter = 0;
 
     public EchoServer(RecordRepository recordRepository) throws SocketException {
-        socket = new DatagramSocket(4445);
+        socket = new DatagramSocket(4446);
         this.recordRepository = recordRepository;
     }
 
@@ -55,14 +56,19 @@ public class EchoServer extends Thread {
 
             String prefix = splitParams.get(0)[0];
             if(prefix.equals("data")){
-                Integer light = Integer.parseInt(splitParams.get(1)[1]);
-                Double humidity = Double.parseDouble(splitParams.get(2)[1]);
-                Double temperature = Double.parseDouble(splitParams.get(3)[1]);
-                String last = splitParams.get(4)[1];
+                String robotId = splitParams.get(1)[1];
+                Integer light = Integer.parseInt(splitParams.get(2)[1]);
+                Double humidity = Double.parseDouble(splitParams.get(3)[1]);
+                Double temperature = Double.parseDouble(splitParams.get(4)[1]);
+                String last = splitParams.get(5)[1];
+
                 int indexOf = last.indexOf('\r');
                 Integer dist = Integer.parseInt(last.substring(0,indexOf));
 
-                recordRepository.save(new RecordEntity(null,light,humidity,temperature,dist,LocalDateTime.now()));
+                recordRepository.save(new RecordEntity(null,robotId, light,humidity,temperature,dist,LocalDateTime.now().plusSeconds(counter++)));
+                if (counter == 9){
+                    counter = 0;
+                }
             }else{
                 System.out.println("prefix is: " + prefix);
             }

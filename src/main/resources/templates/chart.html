@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Raspduino data charts</h1>
+
+    <a href="./index.html">index</a>
+
+    <div class="row">
+        <div class="col-sm-12">
+
+
+
+    </div>
+</div>
+    <h2>temperature</h2>
+    <div id="temperature"><!-- Plotly chart will be drawn inside this DIV --></div>
+    <h2>humidity</h2>
+    <div id="humidity"><!-- Plotly chart will be drawn inside this DIV --></div>
+    <h2>distance</h2>
+    <div id="distance"><!-- Plotly chart will be drawn inside this DIV --></div>
+    <h2>light</h2>
+    <div id="light"><!-- Plotly chart will be drawn inside this DIV --></div>
+    <script>
+
+        $.get('http://localhost:9002/chartData',function(response, status){
+
+            var tempData = [
+                {
+                    x: response.time,
+                    y: response.temperature,
+                    type: 'scatter'
+                }
+            ];
+            var humidityData = [
+                {
+                    x: response.time,
+                    y: response.humidity,
+                    type: 'scatter'
+                }
+            ];
+            var distanceData = [
+                {
+                    x: response.time,
+                    y: response.distance,
+                    type: 'scatter'
+                }
+            ];
+            var lightData = [
+                {
+                    x: response.time,
+                    y: response.light,
+                    type: 'scatter'
+                }
+            ];
+
+            Plotly.newPlot('temperature', tempData);
+            Plotly.newPlot('humidity', humidityData);
+            Plotly.newPlot('distance', distanceData);
+            Plotly.newPlot('light', lightData);
+        });
+
+    </script>
+
+
+</div>
+</body>
+</html>

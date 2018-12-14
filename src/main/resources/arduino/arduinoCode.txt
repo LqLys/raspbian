@@ -1,0 +1,132 @@
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
+#define DHTTYPE DHT11
+#define DHTPIN 4
+
+#define trigPin 12
+#define echoPin 11
+
+
+
+
+
+DHT dht(DHTPIN, DHTTYPE);
+int takeMeasureEvery = 1000;
+String robotId = "JacekPlacek";
+int counter = 0;
+String msg = "";
+String prefix = "";
+int orderCode = 0;
+int temp;
+int distance = 0;
+int light = 0;
+String measures[10];
+String measureData = "";
+
+void setup() {
+  Serial.begin(115200);
+
+
+  pinMode(10, OUTPUT);
+  digitalWrite(10,HIGH);
+  pinMode(3, OUTPUT);
+  digitalWrite(3,HIGH);
+
+  pinMode(trigPin, OUTPUT); //Pin, do którego podłączymy trig jako wyjście
+  pinMode(echoPin, INPUT); //a echo, jako wejście
+
+}
+
+void loop() {
+  measureData = "";
+  measureData += "data";
+
+  measureData += ";robotId=";
+  measureData += robotId;
+
+  light = analogRead(A5);
+//  Serial.print("data");
+//  Serial.print(";light=");
+//  Serial.print(light);
+  measureData += ";light=";
+  measureData += light;
+
+//  Serial.print(";humidity=");
+//  Serial.print(dht.readHumidity());
+
+  measureData += ";humidity=";
+  measureData += dht.readHumidity();
+
+//  Serial.print(";temperature=");
+//  Serial.print(dht.readTemperature());
+
+  measureData += ";temperature=";
+  measureData += dht.readTemperature();
+
+//  Serial.print(";distance=");
+//  Serial.println(zmierzOdleglosc());
+
+  measureData += ";distance=";
+  distance = zmierzOdleglosc();
+  if(distance < 5){
+    Serial.println("Obstacle detected, performing dodge manouver");
+  }
+  measureData += distance;
+
+  measures[counter] = measureData;
+//  Serial.print(counter);
+//  Serial.print(".");
+//  Serial.println(measureData);
+  if(counter == 9){
+    for(int i = 0; i < 10; i++){
+      Serial.println(measures[i]);
+      delay(50);
+    }
+
+  }
+//  Serial.println(measureData);
+
+
+
+//  Serial.print("Sending stats every=");
+//  Serial.println(sendStatsEvery);
+
+  if (Serial.available() > 0) {
+    msg =  Serial.readStringUntil('\n');
+    Serial.print("dostalem ");
+    Serial.println(msg);
+    prefix = msg.substring(0, 2);
+
+
+
+
+    if(prefix.equals("se")){
+      takeMeasureEvery = msg.substring(2).toInt();
+    }
+
+
+  }
+  counter++;
+  if(counter == 10){
+    counter = 0;
+  }
+  delay(takeMeasureEvery);
+
+}
+
+
+
+int zmierzOdleglosc() {
+  long czas, dystans;
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  czas = pulseIn(echoPin, HIGH);
+  dystans = czas / 58;
+
+  return dystans;
+}

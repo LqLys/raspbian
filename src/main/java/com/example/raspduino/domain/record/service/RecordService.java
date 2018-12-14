@@ -6,6 +6,10 @@ import com.example.raspduino.domain.record.mapper.RecordMapper;
 import com.example.raspduino.domain.record.repository.RecordRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Created by hirri on 2018-12-09.
  */
@@ -29,4 +33,20 @@ public class RecordService {
 
     }
 
+    public List<RecordDto> getAllRecordsInTimeRange(LocalDateTime dateFrom, LocalDateTime dateTo) {
+        return recordRepository.findAllByMeasuredAtBetween(dateFrom, dateTo)
+                .stream()
+                .map(recordMapper::entityToDto)
+                .limit(10)
+                .collect(Collectors.toList());
+
+    }
+
+    public List<RecordDto> get100LatestRecords(){
+        return recordRepository.findTop100ByMeasuredAtBetweenOrderByMeasuredAtDesc(LocalDateTime.now().minusDays(2),LocalDateTime.now())
+                .stream()
+                .map(recordMapper::entityToDto)
+                .limit(25)
+                .collect(Collectors.toList());
+    }
 }
