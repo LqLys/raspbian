@@ -100,9 +100,9 @@ public class RecordResource {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         List<RecordDto> records = recordService.get100LatestRecords();
-        String robotId = records.get(0).getRobotId();
+//        String robotId = records.get(0).getRobotId();
         records.stream()
-                .filter(record -> record.getDistance() < 2000)
+//                .filter(record -> record.getDistance() < 2000)
                 .forEach(record ->{
                     String dateTime = record.getMeasuredAt().format(formatter);
                     time.add(dateTime);
@@ -112,7 +112,7 @@ public class RecordResource {
                     light.add(record.getLight());
 
                 });
-        return new ChartDataDto(robotId,time,distance,temperature, humidity,light);
+        return new ChartDataDto("jacek placek",time,distance,temperature, humidity,light);
 
     }
 
@@ -143,12 +143,15 @@ public class RecordResource {
 //        handler.handleMessage(MessageBuilder.withPayload(payload).build());
     }
 
-    @PostMapping(name = "/message", produces = "application/json")
-    public String sendMessage(@RequestBody MessageRequestDto messageRequestDto) throws IOException {
-        EchoClient c = new EchoClient();
-        String response = c.sendEcho(messageRequestDto.getMessage());
-        c.close();
-        return response;
+    @PostMapping(path = "/message", produces = "application/json")
+    public RespWr sendMessage(@RequestBody MessageRequestDto messageRequestDto) throws IOException {
+        RespWr a = new RespWr(messageRequestDto.getMessage());
+
+        //        EchoClient c = new EchoClient();
+//        String response = c.sendEcho(messageRequestDto.getMessage());
+//        c.close();
+//        return response;
+        return a;
     }
 
 

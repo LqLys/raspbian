@@ -43,7 +43,7 @@ public class RecordService {
     }
 
     public List<RecordDto> get100LatestRecords(){
-        return recordRepository.findTop100ByMeasuredAtBetweenOrderByMeasuredAtDesc(LocalDateTime.now().minusDays(2),LocalDateTime.now())
+        return recordRepository.findTop100ByMeasuredAtBetweenOrderByMeasuredAtDesc(LocalDateTime.now().minusDays(10),LocalDateTime.now())
                 .stream()
                 .map(recordMapper::entityToDto)
                 .limit(25)

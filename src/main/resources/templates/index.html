@@ -45,15 +45,15 @@
     $('#send').on('click', function(){
 
         var m = $('#msg').val();
-
         var dat = { "message": m}
         $.ajax({
             data: JSON.stringify(dat),
             contentType: 'application/json',
-            url : "http://localhost:9002/message",
+            url : "http://localhost:9002/record/message",
             type : 'POST',
             success : function(resp) {
-                    $('#response').text(resp)
+                    console.log(resp.message)
+                    $('#response').text(resp.message)
             }
         });
 //        $.post('http://localhost:9002/message',m,function(data, status){
