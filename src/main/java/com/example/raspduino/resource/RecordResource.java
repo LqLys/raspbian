@@ -142,11 +142,12 @@ public class RecordResource {
 //        handler.handleMessage(MessageBuilder.withPayload(payload).build());
     }
 
-    @PostMapping("/message/{msg}")
-    public void sendMessage(@PathVariable("msg")String msg) throws IOException {
+    @PostMapping(name = "/message", produces = "application/json")
+    public String sendMessage(@RequestBody MessageRequestDto messageRequestDto) throws IOException {
         EchoClient c = new EchoClient();
-        c.sendEcho(msg);
+        String response = c.sendEcho(messageRequestDto.getMessage());
         c.close();
+        return response;
     }
 
 

@@ -19,17 +19,51 @@
 <body>
 
 <div class="container">
-    <h1>My First Bootstrap Page</h1>
-    <p>This is some text.</p>
-    <a href="./data.html">data</a>
-    <a href="./chart.html">chart</a>
-    <a href="./distance.html">distance</a>
-    <div class="row">
-        <div class="col-sm-2">.col</div>
-        <div class="col-sm-8">.col</div>
-        <div class="col-sm-2">.col</div>
-    </div>
-</div>
+    <h1>Raspduino</h1>
+    <nav class="navbar navbar-expand-sm bg-light">
 
+        <!-- Links -->
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="./index.html">home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="./chart.html">chart</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="form-group">
+        <label for="msg">Message:</label>
+        <input type="text" class="form-control" id="msg">
+        <button id="send">Send message</button>
+        <p>Response:</p>
+        <p id="response"></p>
+    </div>
+
+</div>
+<script>
+    $('#send').on('click', function(){
+
+        var m = $('#msg').val();
+
+        var dat = { "message": m}
+        $.ajax({
+            data: JSON.stringify(dat),
+            contentType: 'application/json',
+            url : "http://localhost:9002/message",
+            type : 'POST',
+            success : function(resp) {
+                    $('#response').text(resp)
+            }
+        });
+//        $.post('http://localhost:9002/message',m,function(data, status){
+//
+//
+//        });
+
+//        $('#msg').val('');
+    })
+//
+</script>
 </body>
 </html>
