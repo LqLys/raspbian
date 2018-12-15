@@ -22,7 +22,8 @@ import java.util.stream.Collectors;
 /**
  * Created by hirri on 2018-12-09.
  */
-@RestController("/record")
+@RestController
+@RequestMapping("/record")
 public class RecordResource {
 
     private final RecordService recordService;
