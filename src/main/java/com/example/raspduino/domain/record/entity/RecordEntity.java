@@ -20,16 +20,18 @@ public class RecordEntity {
     private String id;
     private String robotId;
     private Integer light;
+    private Double voltage;
     private Double humidity;
     private Double temperature;
     private Integer distance;
     private LocalDateTime measuredAt;
 
 
-    public RecordEntity(String id, String robotId,Integer light, Double humidity, Double temperature, Integer distance, LocalDateTime measuredAt) {
+    public RecordEntity(String id, String robotId, Integer light, Double voltage, Double humidity, Double temperature, Integer distance, LocalDateTime measuredAt) {
         this.id = id;
         this.robotId = robotId;
         this.light = light;
+        this.voltage = voltage;
         this.humidity = humidity;
         this.temperature = temperature;
         this.distance = distance;
@@ -47,12 +49,28 @@ public class RecordEntity {
         this.id = id;
     }
 
+    public String getRobotId() {
+        return robotId;
+    }
+
+    public void setRobotId(String robotId) {
+        this.robotId = robotId;
+    }
+
     public Integer getLight() {
         return light;
     }
 
     public void setLight(Integer light) {
         this.light = light;
+    }
+
+    public Double getVoltage() {
+        return voltage;
+    }
+
+    public void setVoltage(Double voltage) {
+        this.voltage = voltage;
     }
 
     public Double getHumidity() {
@@ -85,13 +103,5 @@ public class RecordEntity {
 
     public void setMeasuredAt(LocalDateTime measuredAt) {
         this.measuredAt = measuredAt;
-    }
-
-    public String getRobotId() {
-        return robotId;
-    }
-
-    public void setRobotId(String robotId) {
-        this.robotId = robotId;
     }
 }

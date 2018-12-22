@@ -10,6 +10,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,14 +59,16 @@ public class EchoServer extends Thread {
             if(prefix.equals("data")){
                 String robotId = splitParams.get(1)[1];
                 Integer light = Integer.parseInt(splitParams.get(2)[1]);
-                Double humidity = Double.parseDouble(splitParams.get(3)[1]);
+                Double voltage = Double.parseDouble(splitParams.get(3)[1]);
                 Double temperature = Double.parseDouble(splitParams.get(4)[1]);
-                String last = splitParams.get(5)[1];
+                Double humidity = Double.parseDouble(splitParams.get(5)[1]);
+                LocalDateTime time = formatDate(splitParams.get(6)[1]);
+                String last = splitParams.get(7)[1];
 
                 int indexOf = last.indexOf('\r');
                 Integer dist = Integer.parseInt(last.substring(0,indexOf));
 
-                recordRepository.save(new RecordEntity(null,robotId, light,humidity,temperature,dist,LocalDateTime.now().plusSeconds(counter++)));
+                recordRepository.save(new RecordEntity(null,robotId, light, voltage,humidity,temperature,dist,time));
                 if (counter == 9){
                     counter = 0;
                 }
@@ -96,5 +99,24 @@ public class EchoServer extends Thread {
 
     public void stopServer(){
         running = false;
+    }
+
+    private LocalDateTime formatDate(String time){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        StringBuilder sb = new StringBuilder();
+        String[] date = time.split("-");
+        sb.append("20").append(date[0]);
+        for(int i = 1; i<date.length; i++){
+            sb.append(date[i].length() == 1 ? "-0" : "-").append(date[i]);
+        }
+        String formattedString = sb.toString();
+        date = formattedString.split("-");
+        sb = new StringBuilder();
+        sb.append(date[0]).append("-").append(date[1]).append("-").append(date[2]).append(" ")
+                .append(date[3]).append(":").append(date[4]).append(":").append(date[5]);
+
+        LocalDateTime localDateTime = LocalDateTime.parse(sb.toString(),formatter);
+        return localDateTime;
+
     }
 }

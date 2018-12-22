@@ -21,9 +21,10 @@ public class RecordDto {
     private Double temperature;
     private Integer distance;
     private LocalDateTime measuredAt;
+    private Double voltage;
 
 
-    public RecordDto(String id, String robotId, Integer light, Double humidity, Double temperature, Integer distance, LocalDateTime measuredAt) {
+    public RecordDto(String id, String robotId, Integer light, Double humidity, Double temperature, Integer distance, LocalDateTime measuredAt, Double voltage) {
         this.id = id;
         this.robotId = robotId;
         this.light = light;
@@ -31,6 +32,7 @@ public class RecordDto {
         this.temperature = temperature;
         this.distance = distance;
         this.measuredAt = measuredAt;
+        this.voltage = voltage;
     }
 
 
@@ -92,5 +94,13 @@ public class RecordDto {
 
     public void setRobotId(String robotId) {
         this.robotId = robotId;
+    }
+
+    public Double getVoltage() {
+        return voltage;
+    }
+
+    public void setVoltage(Double voltage) {
+        this.voltage = voltage;
     }
 }

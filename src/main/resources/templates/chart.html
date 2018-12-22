@@ -41,6 +41,8 @@
     <div id="distance"><!-- Plotly chart will be drawn inside this DIV --></div>
     <h2>light</h2>
     <div id="light"><!-- Plotly chart will be drawn inside this DIV --></div>
+    <h2>voltage</h2>
+    <div id="voltage"><!-- Plotly chart will be drawn inside this DIV --></div>
     <script>
 
         $.get('http://localhost:9002/record/chartData',function(response, status){
@@ -73,11 +75,20 @@
                     type: 'scatter'
                 }
             ];
+            var voltageData = [
+                {
+                    x: response.time,
+                    y: response.voltage,
+                    type: 'scatter'
+                }
+            ];
+
 
             Plotly.newPlot('temperature', tempData);
             Plotly.newPlot('humidity', humidityData);
             Plotly.newPlot('distance', distanceData);
             Plotly.newPlot('light', lightData);
+            Plotly.newPlot('voltage', voltageData);
         });
 
     </script>

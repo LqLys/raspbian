@@ -96,6 +96,7 @@ public class RecordResource {
         List<Double> humidity = new ArrayList<>();
         List<Double> temperature = new ArrayList<>();
         List<Integer> light = new ArrayList<>();
+        List<Double> voltage = new ArrayList<>();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -110,9 +111,10 @@ public class RecordResource {
                     humidity.add(record.getHumidity());
                     temperature.add(record.getTemperature());
                     light.add(record.getLight());
+                    voltage.add(record.getVoltage());
 
                 });
-        return new ChartDataDto("jacek placek",time,distance,temperature, humidity,light);
+        return new ChartDataDto("jacek placek",time,distance,temperature, humidity,light, voltage);
 
     }
 
@@ -144,14 +146,14 @@ public class RecordResource {
     }
 
     @PostMapping(path = "/message", produces = "application/json")
-    public RespWr sendMessage(@RequestBody MessageRequestDto messageRequestDto) throws IOException {
-        RespWr a = new RespWr(messageRequestDto.getMessage());
+    public MessageRequestDto sendMessage(@RequestBody MessageRequestDto messageRequestDto) throws IOException {
 
-        //        EchoClient c = new EchoClient();
-//        String response = c.sendEcho(messageRequestDto.getMessage());
-//        c.close();
-//        return response;
-        return a;
+
+                EchoClient c = new EchoClient();
+        String response = c.sendEcho(messageRequestDto.getMessage());
+        c.close();
+        return new MessageRequestDto(response);
+
     }
 
 

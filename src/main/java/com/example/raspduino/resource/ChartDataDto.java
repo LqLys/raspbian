@@ -12,15 +12,17 @@ public class ChartDataDto {
     private List<Double> temperature;
     private List<Double> humidity;
     private List<Integer> light;
+    private List<Double> voltage;
 
 
-    public ChartDataDto(String robotId, List<String> time, List<Integer> distance, List<Double> temperature, List<Double> humidity, List<Integer> light) {
+    public ChartDataDto(String robotId, List<String> time, List<Integer> distance, List<Double> temperature, List<Double> humidity, List<Integer> light, List<Double> voltage) {
         this.robotId = robotId;
         this.time = time;
         this.distance = distance;
         this.temperature = temperature;
         this.humidity = humidity;
         this.light = light;
+        this.voltage = voltage;
     }
 
     public ChartDataDto() {
@@ -72,6 +74,14 @@ public class ChartDataDto {
 
     public void setLight(List<Integer> light) {
         this.light = light;
+    }
+
+    public List<Double> getVoltage() {
+        return voltage;
+    }
+
+    public void setVoltage(List<Double> voltage) {
+        this.voltage = voltage;
     }
 }
 
