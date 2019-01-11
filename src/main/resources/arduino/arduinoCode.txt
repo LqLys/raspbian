@@ -2,131 +2,159 @@
 #include <DHT.h>
 #define DHTTYPE DHT11
 #define DHTPIN 4
-
+#include <avr/pgmspace.h>
 #define trigPin 12
 #define echoPin 11
 
+#include <DS3231.h>
+#include <Wire.h>
+int lights[10];
+double voltage[10];
+double temps[10];
+double hums[10];
+int distances[10];
+String times[10];
 
-
-
-
+DS3231 Clock;
 DHT dht(DHTPIN, DHTTYPE);
 int takeMeasureEvery = 1000;
-String robotId = "JacekPlacek";
+String robotId = "Jacek";
 int counter = 0;
 String msg = "";
 String prefix = "";
 int orderCode = 0;
-int temp;
 int distance = 0;
-int light = 0;
-String measures[10];
-String measureData = "";
+boolean on;
 
+unsigned long start;
+unsigned long duration;
+
+String time;
+bool Century = false;
+bool h12;
+bool PM;
 void setup() {
+
+  on = true;
+  duration = 10;
+  start = millis();
   Serial.begin(115200);
 
-
-  pinMode(10, OUTPUT);
-  digitalWrite(10,HIGH);
-  pinMode(3, OUTPUT);
-  digitalWrite(3,HIGH);
-
-  pinMode(trigPin, OUTPUT); //Pin, do którego podłączymy trig jako wyjście
-  pinMode(echoPin, INPUT); //a echo, jako wejście
+  Wire.begin();
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
 
 }
 
 void loop() {
-  measureData = "";
-  measureData += "data";
-
-  measureData += ";robotId=";
-  measureData += robotId;
-
-  light = analogRead(A5);
-//  Serial.print("data");
-//  Serial.print(";light=");
-//  Serial.print(light);
-  measureData += ";light=";
-  measureData += light;
-
-//  Serial.print(";humidity=");
-//  Serial.print(dht.readHumidity());
-
-  measureData += ";humidity=";
-  measureData += dht.readHumidity();
-
-//  Serial.print(";temperature=");
-//  Serial.print(dht.readTemperature());
-
-  measureData += ";temperature=";
-  measureData += dht.readTemperature();
-
-//  Serial.print(";distance=");
-//  Serial.println(zmierzOdleglosc());
-
-  measureData += ";distance=";
-  distance = zmierzOdleglosc();
-  if(distance < 5){
-    Serial.println("Obstacle detected, performing dodge manouver");
-  }
-  measureData += distance;
-
-  measures[counter] = measureData;
-//  Serial.print(counter);
-//  Serial.print(".");
-//  Serial.println(measureData);
-  if(counter == 9){
-    for(int i = 0; i < 10; i++){
-      Serial.println(measures[i]);
-      delay(50);
-    }
-
-  }
-//  Serial.println(measureData);
-
-
-
-//  Serial.print("Sending stats every=");
-//  Serial.println(sendStatsEvery);
-
   if (Serial.available() > 0) {
     msg =  Serial.readStringUntil('\n');
     Serial.print("dostalem ");
     Serial.println(msg);
     prefix = msg.substring(0, 2);
-
-
-
-
-    if(prefix.equals("se")){
+    if (prefix.equals("se")) {
       takeMeasureEvery = msg.substring(2).toInt();
+    } else if (prefix.equals("du")) {
+      duration = msg.substring(2).toInt();
+    } else if (prefix.equals("on")) {
+      on = true;
+      start = millis();
+    } else if (prefix.equals("of")) {
+      on = false;
+    } else if (prefix.equals("bk")) {
+      on = false;
+      Serial.println("Returning to base");
+    } else if (prefix.equals("dt")) {
+      printData();
+    }
+  }
+
+  if (on) {
+    if ((millis() - start) / 1000 > duration) {
+      on = false;
+      Serial.println("Mission finished.");
+      return;
+    }
+    if (counter == 10) {
+      counter = 0;
     }
 
+    lights[counter] = analogRead(A1);
+    voltage[counter] = analogRead(A0) * (5.0 / 1024.0);
+    temps[counter] = dht.readTemperature();
+    hums[counter] = dht.readHumidity();
+    distance = getDistance();
+    distances[counter] = distance;
+    times[counter] = getTime();
 
-  }
-  counter++;
-  if(counter == 10){
-    counter = 0;
-  }
-  delay(takeMeasureEvery);
 
+    if (distance < 5) {
+      Serial.println("Obstacle detecte");
+    }
+    //    Serial.print("Counter: ");
+    //    Serial.println(counter);
+    counter++;
+    //    Serial.println(freeRam());
+    if (counter == 10) {
+      printData();
+
+    }
+
+    delay(takeMeasureEvery);
+  }
 }
 
 
 
-int zmierzOdleglosc() {
-  long czas, dystans;
-
+int getDistance() {
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
+  return pulseIn(echoPin, HIGH) / 58;
+}
 
-  czas = pulseIn(echoPin, HIGH);
-  dystans = czas / 58;
+String getTime() {
+  time = "";
+  time += Clock.getYear();
+  time += "-";
+  time += Clock.getMonth(Century);
+  time += "-";
+  time += Clock.getDate();
+  time += "-";
+  time += Clock.getHour(h12, PM);
+  time += "-";
+  time += Clock.getMinute();
+  time += "-";
+  time += Clock.getSecond();
 
-  return dystans;
+  return time;
+}
+
+void printData() {
+  for (int i = 0; i < counter; i++) {
+    Serial.print("data");
+    Serial.print(";robotId=");
+    Serial.print(robotId);
+    Serial.print(";light=");
+    Serial.print(lights[i]);
+    Serial.print(";voltage=");
+    Serial.print(voltage[i]);
+    Serial.print(";temperature=");
+    Serial.print(temps[i]);
+    Serial.print(";humidity=");
+    Serial.print(hums[i]);
+    Serial.print(";time=");
+    Serial.print(times[i]);
+    Serial.print(";distance=");
+    Serial.println(distances[i]);
+    delay(50);
+  }
+}
+
+int freeRam () {
+  extern int __heap_start, *__brkval;
+  int v;
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 }
