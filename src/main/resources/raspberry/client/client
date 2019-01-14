@@ -1,0 +1,26 @@
+import serial
+import socket
+import time
+#192.168.0.6
+IP = "192.168.1.110"
+PORT = 4446
+ser = serial.Serial('/dev/ttyS0', 115200)
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+temp = ""
+while 1: 
+    if(ser.in_waiting >0):
+        line = ser.readline()
+        #temp = line.decode('utf-8')
+        #temp = temp[:-4]
+        #line = temp.encode('utf-8')
+        
+        if(len(line) > 0):
+            print(line.decode('utf-8'))
+            
+            #ser.write(str.encode('dupa'))
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.sendto(line,(IP, PORT))
+            
+        else:
+            continue
+    sock = None
